@@ -1,0 +1,29 @@
+{
+    "workbench.view.alwaysShowHeaderActions": false,
+    "workbench.view.showQuietly": {
+        "workbench.panel.output": false
+    },
+    "breadcrumbs.filePath": "on",
+    "workbench.editor.alwaysShowEditorActions": true,
+    "workbench.editor.doubleClickTabToToggleEditorGroupSizes": "expand",
+    "workbench.editor.empty.hint": "text",
+    "workbench.editor.enablePreviewFromCodeNavigation": false,
+    "workbench.editor.highlightModifiedTabs": false,
+    "workbench.editor.limit.enabled": false,
+    "workbench.editor.pinnedTabsOnSeparateRow": false,
+    "workbench.editor.revealIfOpen": false,
+    "workbench.editor.tabActionCloseVisibility": true,
+    "workbench.editor.tabActionUnpinVisibility": true,
+    "workbench.editor.wrapTabs": false,
+    "files.autoSave": "onFocusChange",
+    "editor.cursorStyle": "line",
+    "editor.wordWrap": "on",
+    "workbench.editor.enablePreview": true,
+    "cursor.composer.cmdPFilePicker2": false,
+    "cursor.composer.conversationDensity": "compact-all-grouped",
+    "cursor.composer.editorConversationDensity": "detailed",
+    "cursor.composer.queueMessageDefaultBehavior": "queue",
+    "editor.insertSpaces": true,
+    "explorer.autoOpenDroppedFile": true,
+    "explorer.compactFolders": false
+}
