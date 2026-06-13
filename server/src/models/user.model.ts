@@ -18,7 +18,11 @@ const userSchema = new Schema(
       trim: true,
     },
     password: { type: String, required: true },
+    isActive: { type: Boolean, required: true, default: true },
     isOtpVerified: { type: Boolean, required: true, default: false },
+    refreshTokenHash: { type: String, default: null },
+    otpHash: { type: String, default: null },
+    otpExpiresAt: { type: Date, default: null },
   },
   { timestamps: true, collection: "users" },
 )

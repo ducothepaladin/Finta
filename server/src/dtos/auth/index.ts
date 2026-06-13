@@ -1,0 +1,5 @@
+export { parseChangePasswordDto, type ChangePasswordDto } from "./change-password.dto.js"
+export { parseLoginDto, type LoginDto } from "./login.dto.js"
+export { parseRegisterDto, type RegisterDto } from "./register.dto.js"
+export { parseUpdateProfileDto, type UpdateProfileDto } from "./update-profile.dto.js"
+export { parseVerifyOtpDto, type VerifyOtpDto } from "./verify-otp.dto.js"

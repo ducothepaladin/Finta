@@ -21,20 +21,41 @@ function withPageLoader(
 }
 
 const LazyDocumentsPage = lazy(() =>
-  import("@/app/pages/documents-page").then((module) => ({
+  import("@/pages/documents-page").then((module) => ({
     default: module.DocumentsPage,
   })),
 )
 
 const LazyDocumentPage = lazy(() =>
-  import("@/app/pages/document-page").then((module) => ({
+  import("@/pages/document-page").then((module) => ({
     default: module.DocumentPage,
+  })),
+)
+
+const LazyLoginPage = lazy(() =>
+  import("@/pages/login-page").then((module) => ({
+    default: module.LoginPage,
+  })),
+)
+
+const LazyRegisterPage = lazy(() =>
+  import("@/pages/register-page").then((module) => ({
+    default: module.RegisterPage,
+  })),
+)
+
+const LazyVerifyOtpPage = lazy(() =>
+  import("@/pages/verify-otp-page").then((module) => ({
+    default: module.VerifyOtpPage,
   })),
 )
 
 export const lazyPages = {
   DocumentsPage: withPageLoader(LazyDocumentsPage),
   DocumentPage: withPageLoader(LazyDocumentPage),
+  LoginPage: withPageLoader(LazyLoginPage),
+  RegisterPage: withPageLoader(LazyRegisterPage),
+  VerifyOtpPage: withPageLoader(LazyVerifyOtpPage),
 } as const
 
 export type LazyPageKey = keyof typeof lazyPages
