@@ -1,0 +1,269 @@
+---
+alwaysApply: true
+---
+
+# Theme Rules — Laconic PDF Reader
+
+## Stack
+React + Vite + TypeScript + Tailwind CSS. Desktop-first. Light/dark mode toggle.
+
+---
+
+## Color Palette
+
+Five named ramps. Always reference by token name and stop number.
+
+### Powder Blue — primary actions, links, chat, focus rings
+| Stop | Hex |
+|------|-----|
+| 50 | `#eef2f6` |
+| 100 | `#dee6ed` |
+| 200 | `#bcccdc` |
+| 300 | `#9bb2ca` |
+| 400 | `#7999b9` |
+| 500 | `#587fa7` |
+| 600 | `#466686` |
+| 700 | `#354c64` |
+| 800 | `#233343` |
+| 900 | `#121921` |
+| 950 | `#0c1217` |
+
+### Vanilla Custard — notes, text highlights
+| Stop | Hex |
+|------|-----|
+| 50 | `#fffde5` |
+| 100 | `#fffccc` |
+| 200 | `#fff899` |
+| 300 | `#fff566` |
+| 400 | `#fff133` |
+| 500 | `#ffee00` |
+| 600 | `#ccbe00` |
+| 700 | `#998f00` |
+| 800 | `#665f00` |
+| 900 | `#333000` |
+| 950 | `#242100` |
+
+### Honeydew — translate feature
+| Stop | Hex |
+|------|-----|
+| 50 | `#f0f5f2` |
+| 100 | `#e0ebe5` |
+| 200 | `#c2d6ca` |
+| 300 | `#a3c2b0` |
+| 400 | `#85ad96` |
+| 500 | `#66997b` |
+| 600 | `#527a63` |
+| 700 | `#3d5c4a` |
+| 800 | `#293d31` |
+| 900 | `#141f19` |
+| 950 | `#0e1511` |
+
+### Frosted Mint — summarize feature
+| Stop | Hex |
+|------|-----|
+| 50 | `#f3f9eb` |
+| 100 | `#e7f3d8` |
+| 200 | `#d0e8b0` |
+| 300 | `#b8dc89` |
+| 400 | `#a0d062` |
+| 500 | `#89c43b` |
+| 600 | `#6d9d2f` |
+| 700 | `#527623` |
+| 800 | `#374f17` |
+| 900 | `#1b270c` |
+| 950 | `#131b08` |
+
+### Dusty Taupe — neutral surfaces, sidebar, borders
+| Stop | Hex |
+|------|-----|
+| 50 | `#f6f1ef` |
+| 100 | `#ece2df` |
+| 200 | `#dac5be` |
+| 300 | `#c7a89e` |
+| 400 | `#b58b7d` |
+| 500 | `#a26e5d` |
+| 600 | `#82584a` |
+| 700 | `#614238` |
+| 800 | `#412c25` |
+| 900 | `#201613` |
+| 950 | `#170f0d` |
+
+---
+
+## Semantic Color Usage
+
+| Purpose | Light mode | Dark mode |
+|---------|-----------|-----------|
+| Primary button fill | Powder Blue 500 | Powder Blue 500 |
+| Primary button hover | Powder Blue 600 | Powder Blue 400 |
+| Link / text action | Powder Blue 500 | Powder Blue 300 |
+| Focus ring | Powder Blue 400 | Powder Blue 400 |
+| Page background | white | Powder Blue 950 |
+| Sidebar / panel bg | Dusty Taupe 50 | Powder Blue 900 |
+| Card background | white | Powder Blue 800 |
+| Border (default) | Dusty Taupe 100 | Powder Blue 700 |
+| Border (hover/emphasis) | Dusty Taupe 200 | Powder Blue 600 |
+| Text primary | Powder Blue 900 | Dusty Taupe 50 |
+| Text secondary | Powder Blue 700 | Powder Blue 300 |
+| Text tertiary / caption | Dusty Taupe 400 | Powder Blue 600 |
+
+---
+
+## Feature Color Assignments
+
+Each AI feature has a dedicated color ramp used consistently across: popover button, badge, history entry icon, and highlight overlay.
+
+| Feature | Ramp | Badge bg | Badge text | History icon bg | PDF highlight |
+|---------|------|----------|------------|-----------------|---------------|
+| Note | Vanilla Custard | 50 | 800 | 100 | **500** (bright yellow — PDF only) |
+| Translate | Honeydew | 50 | 800 | 100 | — |
+| Summarize | Frosted Mint | 50 | 800 | 100 | — |
+| Chat | Powder Blue | 50 | 800 | 100 | — |
+
+**Rule:** Vanilla Custard 500 (`#ffee00`) is reserved exclusively for PDF text highlight overlays. Never use it as a UI fill anywhere else. Use 50 or 100 for all UI badge/chip backgrounds.
+
+---
+
+## Typography
+
+Font family: system-ui / sans-serif (Tailwind default). Only two font weights are used: **400** (regular) and **500** (medium). Never use 600 or 700 — they feel heavy against this palette.
+
+| Role | Size | Weight | Notes |
+|------|------|--------|-------|
+| Page title | 22px | 500 | |
+| Section heading | 18px | 500 | |
+| Card / item title | 15px | 500 | |
+| Body | 14px | 400 | Line height 1.7 |
+| Caption / metadata | 12px | 400 | Page numbers, timestamps, file size |
+| Section label | 11px | 500 | Uppercase, 0.07em letter-spacing |
+
+Sentence case everywhere. Never title case or all-caps (except the 11px section label).
+
+No mid-sentence bold. Code identifiers go in `code` style, not **bold**.
+
+---
+
+## Spacing & Radius
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| radius-sm | 4px | Pills, inline tags |
+| radius-md | 8px | Inputs, badges, buttons |
+| radius-lg | 12px | Cards, panels, drawers |
+| gap-xs | 4px | Tight icon gaps |
+| gap-sm | 8px | Inline element gaps |
+| gap-md | 12px | Component internal gaps |
+| gap-lg | 16px | Between components |
+| gap-xl | 24px | Section spacing |
+
+---
+
+## Borders
+
+- Default border: `0.5px solid` — barely-there, keeps surfaces light
+- Hover/emphasis border: `1px solid`
+- Featured/selected card accent: `2px solid` (only exception, e.g. active document card)
+- Never use rounded corners with single-sided borders (e.g. `border-left` only). Rounded corners require borders on all sides.
+
+---
+
+## Component Rules
+
+### Buttons
+- Primary: Powder Blue 500 fill, white text, radius-md
+- Secondary/ghost: transparent bg, 0.5px border, text primary color, radius-md
+- Destructive: use red — not defined in this palette, use Tailwind `red-600`
+- Icon button: 32×32px, Dusty Taupe 50 bg, radius-md
+- No gradients, no shadows on buttons
+
+### Inputs & Search
+- Background: Dusty Taupe 50 (light) / Powder Blue 900 (dark)
+- Border: 0.5px Dusty Taupe 100
+- Focus ring: 2px Powder Blue 400, no border-color change
+- Height: 36px, padding 0 12px
+- Icon: leading search icon in text-tertiary color
+
+### Cards (document list, history entries)
+- Background: white (light) / Powder Blue 800 (dark)
+- Border: 0.5px Dusty Taupe 100
+- Radius: radius-lg
+- Padding: 16px 20px
+- Hover: border upgrades to Dusty Taupe 200
+
+### Feature Badges (popover + history)
+- Inline-flex, align-items center, gap 5px
+- Height: ~24px, padding 3px 10px
+- Radius: 100px (pill)
+- Font: 12px / 500
+- Icon: 13px, leading, from Font Awesome (production) or Tabler (previews)
+- Colors: see Feature Color Assignments table above
+
+### History Entries
+- Layout: flex row, gap 10px
+- Icon square: 20×20px, radius 4px, feature bg color (stop 100), feature icon (stop 800)
+- Title: 13px / 500, text-primary, single line with text-overflow ellipsis
+- Meta: 12px / 400, text-tertiary — format: `{Feature} · Page {n}`
+- Hover: border upgrades, subtle bg tint
+
+### PDF Highlight Overlay
+- Vanilla Custard 500 (`#ffee00`) at ~40% opacity
+- Rendered as absolute-positioned div over normalized rect coordinates (0–1 ratio relative to page dimensions)
+- Must recalculate position on zoom/resize — coordinates are stored normalized, converted to px at render time
+
+### Chat Drawer
+- Animates in from the right within the PDF content area (not a full-screen overlay)
+- Background: white (light) / Powder Blue 900 (dark)
+- Border-left: 0.5px Dusty Taupe 100
+- Width: ~360px
+- Trigger button: Powder Blue 50 bg, Powder Blue 500 icon
+
+### Sidebar / Page List
+- Background: Dusty Taupe 50 (light) / Powder Blue 900 (dark)
+- Width: ~56px collapsed, ~180px expanded
+- Border-right: 0.5px Dusty Taupe 100
+
+---
+
+## Dark Mode Rules
+
+- Toggle between light and dark — no system default auto-switching
+- Backgrounds shift from white → Powder Blue 950/900/800 (deepening hierarchy)
+- Text shifts from Powder Blue 900 → Dusty Taupe 50
+- Borders shift from Dusty Taupe 100 → Powder Blue 700
+- Feature badge colors invert: use stop 800 bg + stop 100 text in dark mode
+- Vanilla Custard highlight stays `#ffee00` at ~40% opacity in both modes — it's visible on dark PDF backgrounds too
+
+---
+
+## Icon Library
+
+Font Awesome (production). Use `fa-regular` (outline) style by default. `fa-solid` only for active/selected states.
+
+Sizes: 14px inline, 16px default UI, 20px decorative max.
+
+| Context | Icon |
+|---------|------|
+| Note | `fa-pencil` |
+| Translate | `fa-language` |
+| Summarize | `fa-wand-magic-sparkles` |
+| Chat | `fa-message` |
+| Search | `fa-magnifying-glass` |
+| Upload | `fa-arrow-up-from-bracket` |
+| Bookmark | `fa-bookmark` |
+| History panel | `fa-clock-rotate-left` |
+| Document | `fa-file-pdf` |
+| Page list | `fa-bars` |
+| Close / dismiss | `fa-xmark` |
+
+---
+
+## What Not to Do
+
+- No gradients anywhere
+- No box-shadows (except 0-spread focus rings)
+- No font-weight 600 or 700
+- No title case or all-caps text (except 11px section labels)
+- No Vanilla Custard 500 in UI — PDF highlights only
+- No rounded corners on single-sided borders
+- Do not use Dusty Taupe as a feature color — it is structural/neutral only
+- Do not add a fourth AI feature color without updating the semantic table above
