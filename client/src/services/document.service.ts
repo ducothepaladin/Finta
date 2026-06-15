@@ -2,11 +2,13 @@ import type { AxiosProgressEvent } from "axios"
 
 import apiClient from "@/app/api/api-client"
 import type {
+  DocumentDetailApiResponse,
   DocumentListApiResponse,
   DocumentListParams,
   DocumentListResponse,
   DocumentUploadApiResponse,
   DocumentUploadResponse,
+  DocumentDto,
 } from "@/types/document"
 
 export const documentService = {
@@ -22,6 +24,13 @@ export const documentService = {
       },
     )
     return response.data.data
+  },
+
+  getById: async (id: string): Promise<DocumentDto> => {
+    const response = await apiClient.get<DocumentDetailApiResponse>(
+      `/documents/${id}`,
+    )
+    return response.data.data.document
   },
 
   upload: async (
@@ -43,5 +52,9 @@ export const documentService = {
     )
 
     return response.data.data
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/documents/${id}`)
   },
 }

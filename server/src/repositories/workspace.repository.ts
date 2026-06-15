@@ -53,6 +53,14 @@ class WorkspaceRepository {
       size: data.size,
     })
   }
+
+  findByIdForUser(id: string, userId: string) {
+    return Workspace.findOne({ _id: id, userId }).exec()
+  }
+
+  deleteByIdForUser(id: string, userId: string) {
+    return Workspace.deleteOne({ _id: id, userId }).exec()
+  }
 }
 
 export const workspaceRepository = new WorkspaceRepository()

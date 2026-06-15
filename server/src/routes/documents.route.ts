@@ -9,4 +9,6 @@ export const documentsRouter = Router()
 documentsRouter.use(authMiddleware)
 
 documentsRouter.get("/", documentsController.list)
+documentsRouter.get("/:id", documentsController.getById)
+documentsRouter.delete("/:id", documentsController.delete)
 documentsRouter.post("/upload", pdfUpload.single("file"), documentsController.upload)

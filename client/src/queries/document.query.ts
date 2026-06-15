@@ -8,12 +8,36 @@ export const documentQueryKeys = {
   all: ["documents"] as const,
   list: (params: DocumentListParams) =>
     [...documentQueryKeys.all, "list", params] as const,
+  detail: (id: string) => [...documentQueryKeys.all, "detail", id] as const,
 }
 
 export function useDocumentsQuery(params: DocumentListParams) {
   return useQuery({
     queryKey: documentQueryKeys.list(params),
     queryFn: () => documentService.list(params),
+  })
+}
+
+export function useDocumentQuery(id: string | undefined) {
+  return useQuery({
+    queryKey: documentQueryKeys.detail(id ?? ""),
+    queryFn: () => documentService.getById(id!),
+    enabled: Boolean(id),
+  })
+}
+
+export function useDeleteDocumentMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => documentService.delete(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: documentQueryKeys.all })
+      toast.success("Document deleted")
+    },
+    onError: () => {
+      toast.error("Could not delete document")
+    },
   })
 }
 

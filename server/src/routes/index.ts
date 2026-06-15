@@ -1,6 +1,7 @@
 import { Router } from "express"
 import { authRouter } from "./auth.route.js"
 import { documentsRouter } from "./documents.route.js"
+import { fileRouter } from "./file.route.js"
 import { healthRouter } from "./health.route.js"
 
 export const apiRouter = Router()
@@ -8,3 +9,4 @@ export const apiRouter = Router()
 apiRouter.use("/health", healthRouter)
 apiRouter.use("/auth", authRouter)
 apiRouter.use("/documents", documentsRouter)
+apiRouter.use("/file/v1", fileRouter)

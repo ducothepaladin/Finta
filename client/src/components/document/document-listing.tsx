@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 
 import { PageLoader } from "@/components/core/page-loader"
+import { DocumentDeleteDialog } from "@/components/document/document-delete-dialog"
 import { DocumentListCard } from "@/components/document/document-list-card"
 import { DocumentListRow } from "@/components/document/document-list-row"
 import { DocumentPagination } from "@/components/document/document-pagination"
@@ -14,6 +15,7 @@ import { mapDocumentDtoToItem } from "@/lib/map-document"
 import { cn } from "@/lib/utils"
 import { useDocumentsQuery } from "@/queries/document.query"
 import { useDocumentStore } from "@/stores"
+import type { DocumentItem } from "@/types/document"
 
 const DEFAULT_PAGE_SIZE = 12
 
@@ -33,6 +35,7 @@ export function DocumentListing() {
   const setViewMode = useDocumentStore((state) => state.setViewMode)
 
   const [uploadOpen, setUploadOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<DocumentItem | null>(null)
 
   useEffect(() => {
     if (previousSearchRef.current === searchQuery) return
@@ -71,6 +74,19 @@ export function DocumentListing() {
     () => (data?.documents ?? []).map(mapDocumentDtoToItem),
     [data?.documents],
   )
+
+  const handleDocumentDeleted = () => {
+    if (documents.length !== 1 || queryPage <= 1) return
+
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.set("page", String(queryPage - 1))
+        return next
+      },
+      { replace: true },
+    )
+  }
 
   const metaLabel =
     total === 0
@@ -134,7 +150,11 @@ export function DocumentListing() {
           <div className="grid grid-cols-[repeat(auto-fill,minmax(148px,1fr))] gap-3.5">
             <DocumentUploadCard onClick={() => setUploadOpen(true)} />
             {documents.map((document) => (
-              <DocumentListCard key={document.id} document={document} />
+              <DocumentListCard
+                key={document.id}
+                document={document}
+                onDeleteRequest={setDeleteTarget}
+              />
             ))}
           </div>
         ) : (
@@ -144,7 +164,11 @@ export function DocumentListing() {
               variant="list"
             />
             {documents.map((document) => (
-              <DocumentListRow key={document.id} document={document} />
+              <DocumentListRow
+                key={document.id}
+                document={document}
+                onDeleteRequest={setDeleteTarget}
+              />
             ))}
           </div>
         )}
@@ -165,6 +189,15 @@ export function DocumentListing() {
       </div>
 
       <DocumentUploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
+      <DocumentDeleteDialog
+        open={deleteTarget !== null}
+        documentId={deleteTarget?.id ?? null}
+        documentName={deleteTarget?.name ?? ""}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+        onDeleted={handleDocumentDeleted}
+      />
     </>
   )
 }

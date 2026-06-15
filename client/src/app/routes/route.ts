@@ -5,6 +5,7 @@ import { lazyPages } from "@/app/constants/lazyload"
 import { ProtectedRoute } from "@/app/routes/protected-route"
 import { AuthLayout } from "@/components/core/layouts/auth-layout"
 import { MainLayout } from "@/components/core/layouts/main-layout"
+import { ReadingLayout } from "@/components/core/layouts/reading-layout"
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +54,16 @@ export const router = createBrowserRouter([
         path: "documents",
         element: createElement(lazyPages.DocumentsPage),
       },
+    ],
+  },
+  {
+    path: "/",
+    element: createElement(
+      ProtectedRoute,
+      { requireAuth: true },
+      createElement(ReadingLayout),
+    ),
+    children: [
       {
         path: "document/:id",
         element: createElement(lazyPages.DocumentPage),

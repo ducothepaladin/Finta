@@ -2,11 +2,11 @@ import { Outlet } from "react-router-dom"
 
 import { MainNavbar } from "@/components/core/main-navbar"
 
-export function MainLayout() {
+export function ReadingLayout() {
   return (
-    <div className="flex min-h-svh flex-col bg-background">
+    <div className="flex h-dvh flex-col overflow-hidden bg-background">
       <MainNavbar />
-      <main className="mx-auto w-full flex-1 px-4 py-6 sm:px-6">
+      <main className="flex min-h-0 flex-1 flex-col">
         <Outlet />
       </main>
     </div>

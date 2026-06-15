@@ -7,6 +7,9 @@ import {
   type DocumentListDto,
 } from "../dtos/document/document.dto.js"
 import { HttpError } from "../lib/http-error.js"
+import { AiTask } from "../models/ai-task.model.js"
+import { Note } from "../models/note.model.js"
+import { Selection } from "../models/selection.model.js"
 import { workspaceRepository } from "../repositories/workspace.repository.js"
 import { uploadBufferToFileService } from "./file-service-upload.util.js"
 
@@ -43,6 +46,17 @@ export async function listDocuments(
   })
 }
 
+export async function getDocumentById(
+  userId: string,
+  id: string,
+): Promise<DocumentDto> {
+  const workspace = await workspaceRepository.findByIdForUser(id, userId)
+  if (!workspace) {
+    throw new HttpError(404, "Document not found")
+  }
+  return toDocumentDto(workspace)
+}
+
 export async function uploadDocument(
   userId: string,
   file: Express.Multer.File,
@@ -74,4 +88,22 @@ export async function uploadDocument(
   })
 
   return toDocumentDto(workspace)
+}
+
+export async function deleteDocument(userId: string, id: string): Promise<void> {
+  const workspace = await workspaceRepository.findByIdForUser(id, userId)
+  if (!workspace) {
+    throw new HttpError(404, "Document not found")
+  }
+
+  await Promise.all([
+    Note.deleteMany({ workspaceId: workspace._id }),
+    AiTask.deleteMany({ workspaceId: workspace._id }),
+    Selection.deleteMany({ workspaceId: workspace._id }),
+  ])
+
+  const result = await workspaceRepository.deleteByIdForUser(id, userId)
+  if (result.deletedCount === 0) {
+    throw new HttpError(404, "Document not found")
+  }
 }

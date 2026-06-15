@@ -284,3 +284,15 @@
     cursor: pointer;
     }
 }
+
+.react-pdf__Page__textContent mark.pdf-search-highlight {
+    background-color: rgb(255 238 0 / 0.4);
+    border-radius: 2px;
+    color: inherit;
+    padding: 0;
+}
+
+.react-pdf__Page__textContent mark.pdf-search-highlight-active {
+    background-color: rgb(88 127 167 / 0.45);
+    outline: 1px solid rgb(88 127 167 / 0.8);
+}

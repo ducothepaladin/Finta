@@ -41,7 +41,7 @@ export function MainNavbar() {
 
   return (
     <header className="border-b border-border bg-background">
-      <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-2 px-4 sm:gap-4 sm:px-6">
+      <div className="mx-auto flex h-14 w-full items-center gap-2 px-4 sm:gap-4 sm:px-6">
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
             to="/documents"

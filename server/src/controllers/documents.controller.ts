@@ -20,6 +20,31 @@ class DocumentsController {
     )
   })
 
+  getById: RequestHandler = asyncHandler(async (req, res) => {
+    const id = String(req.params.id)
+    const document = await documentService.getDocumentById(req.user!.id, id)
+
+    res.json(
+      successResponse({
+        meta: { endpoint: `/api/documents/${id}`, method: "GET" },
+        data: { document },
+        message: "Document fetched successfully",
+      }),
+    )
+  })
+
+  delete: RequestHandler = asyncHandler(async (req, res) => {
+    const id = String(req.params.id)
+    await documentService.deleteDocument(req.user!.id, id)
+
+    res.json(
+      successResponse({
+        meta: { endpoint: `/api/documents/${id}`, method: "DELETE" },
+        message: "Document deleted successfully",
+      }),
+    )
+  })
+
   upload: RequestHandler = asyncHandler(async (req, res) => {
     if (!req.file) {
       throw new HttpError(400, "file is required")

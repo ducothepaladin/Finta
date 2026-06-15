@@ -33,6 +33,10 @@ export type DocumentUploadResponse = {
   document: DocumentDto
 }
 
+export type DocumentDetailResponse = {
+  document: DocumentDto
+}
+
 export type DocumentItem = {
   id: string
   name: string
@@ -51,3 +55,22 @@ export type DocumentViewMode = "grid" | "list"
 
 export type DocumentListApiResponse = ApiEnvelope<DocumentListResponse>
 export type DocumentUploadApiResponse = ApiEnvelope<DocumentUploadResponse>
+export type DocumentDetailApiResponse = ApiEnvelope<DocumentDetailResponse>
+
+export type DocumentHistoryTab = "all" | "translate" | "summary"
+
+export type DocumentHistoryKind = "note" | "translate" | "summary"
+
+export type DocumentHistoryItem = {
+  id: string
+  kind: DocumentHistoryKind
+  text: string
+  pageNumber: number
+}
+
+export type DocumentChatMessage = {
+  id: string
+  role: "user" | "ai"
+  text: string
+  isTyping?: boolean
+}
