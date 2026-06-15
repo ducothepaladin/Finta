@@ -12,6 +12,7 @@ export type DocumentDto = {
   name: string
   originalFileName: string
   fileUrl: string
+  thumbnailUrl?: string
   sizeBytes: number
   type: string
   createdAt: string
@@ -42,6 +43,7 @@ export type DocumentItem = {
   name: string
   originalFileName: string
   fileUrl: string
+  thumbnailUrl?: string
   size: string
   sizeBytes: number
   type: string

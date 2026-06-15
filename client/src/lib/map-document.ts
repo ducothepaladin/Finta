@@ -7,6 +7,7 @@ export function mapDocumentDtoToItem(document: DocumentDto): DocumentItem {
     name: document.originalFileName || document.name,
     originalFileName: document.originalFileName,
     fileUrl: document.fileUrl,
+    thumbnailUrl: document.thumbnailUrl,
     size: formatFileSize(document.sizeBytes),
     sizeBytes: document.sizeBytes,
     type: document.type,

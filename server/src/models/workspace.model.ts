@@ -7,6 +7,7 @@ const workspaceSchema = new Schema(
     originalFileName: { type: String, required: true },
     type: { type: String, required: true },
     fileUrl: { type: String, required: true },
+    thumbnailUrl: { type: String },
     size: { type: Number },
   },
   { timestamps: true, collection: "workspaces" },

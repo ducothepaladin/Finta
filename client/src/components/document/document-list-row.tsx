@@ -25,7 +25,11 @@ export function DocumentListRow({
     >
       <Link to={`/document/${document.id}`} className="relative z-0 flex min-w-0 flex-1">
         <div className="w-28 shrink-0 border-r border-border">
-          <DocumentPreview compact className="h-full min-h-[88px] rounded-none" />
+          <DocumentPreview
+            thumbnailUrl={document.thumbnailUrl}
+            compact
+            className="h-full min-h-[88px] rounded-none"
+          />
         </div>
         <div className="flex min-w-0 flex-1 flex-col justify-center px-4 py-3 pr-12">
           <p className="truncate text-sm font-medium text-foreground">{document.name}</p>

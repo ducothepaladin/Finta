@@ -7,6 +7,7 @@ export type DocumentDto = {
   name: string
   originalFileName: string
   fileUrl: string
+  thumbnailUrl?: string
   sizeBytes: number
   type: string
   createdAt: string
@@ -37,6 +38,7 @@ export function toDocumentDto(workspace: WorkspaceLike): DocumentDto {
     name: workspace.name,
     originalFileName: workspace.originalFileName,
     fileUrl: workspace.fileUrl,
+    thumbnailUrl: workspace.thumbnailUrl || undefined,
     sizeBytes: workspace.size ?? 0,
     type: workspace.type,
     createdAt: workspace.createdAt?.toISOString() ?? new Date().toISOString(),
@@ -60,5 +62,6 @@ export type CreateWorkspaceDto = {
   originalFileName: string
   type: string
   fileUrl: string
+  thumbnailUrl?: string
   size: number
 }

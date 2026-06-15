@@ -50,6 +50,7 @@ class WorkspaceRepository {
       originalFileName: data.originalFileName,
       type: data.type,
       fileUrl: data.fileUrl,
+      thumbnailUrl: data.thumbnailUrl,
       size: data.size,
     })
   }

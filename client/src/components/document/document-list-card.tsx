@@ -27,7 +27,7 @@ export function DocumentListCard({
         to={`/document/${document.id}`}
         className="relative z-0 flex h-full flex-col"
       >
-        <DocumentPreview />
+        <DocumentPreview thumbnailUrl={document.thumbnailUrl} />
         <div className="border-t border-border bg-card px-3 py-2.5">
           <p className="truncate pr-6 text-xs font-medium text-foreground">{document.name}</p>
           <p className="mt-0.5 flex items-center gap-1.5 text-[10px] text-muted-foreground">

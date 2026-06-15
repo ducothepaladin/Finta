@@ -107,7 +107,9 @@ async function fetchBlobForKey(
     const current = cache.get(key)
     if (!current || current !== entry) return
 
-    entry.blobUrl = URL.createObjectURL(response.data as Blob)
+    entry.blobUrl = URL.createObjectURL(
+      new Blob([response.data as Blob], { type: "application/pdf" }),
+    )
     entry.status = "ready"
     entry.progress = 100
     entry.abortController = undefined

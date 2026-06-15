@@ -12,6 +12,7 @@ import { Note } from "../models/note.model.js"
 import { Selection } from "../models/selection.model.js"
 import { workspaceRepository } from "../repositories/workspace.repository.js"
 import { uploadBufferToFileService } from "./file-service-upload.util.js"
+import { renderPdfFirstPageThumbnail } from "./pdf-thumbnail.util.js"
 
 function stripExtension(fileName: string): string {
   const dot = fileName.lastIndexOf(".")
@@ -78,12 +79,29 @@ export async function uploadDocument(
   })
 
   const originalFileName = file.originalname.trim() || "document.pdf"
+  const pdfBuffer = new Uint8Array(file.buffer)
+  let thumbnailUrl: string | undefined
+
+  const thumbnailBuffer = await renderPdfFirstPageThumbnail(pdfBuffer)
+  if (thumbnailBuffer) {
+    const thumbBaseName = stripExtension(originalFileName)
+    const uploadedThumbnail = await uploadBufferToFileService({
+      fileServiceBase: env.fileServiceUrl,
+      buffer: thumbnailBuffer,
+      originalName: `${thumbBaseName}-thumb.jpg`,
+      mimeType: "image/jpeg",
+      folderPath: `${env.uploadFilePath}/thumbnails`,
+    })
+    thumbnailUrl = uploadedThumbnail.fileUrl
+  }
+
   const workspace = await workspaceRepository.create({
     userId,
     name: stripExtension(originalFileName),
     originalFileName,
     type: "application/pdf",
     fileUrl: uploaded.fileUrl,
+    thumbnailUrl,
     size: file.size,
   })
 

@@ -12,6 +12,7 @@
   "dependencies": {
     "@getbrevo/brevo": "^5.0.4",
     "bcrypt": "^6.0.0",
+    "canvas": "^3.2.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -19,7 +20,8 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.0",
-    "multer": "^2.1.1"
+    "multer": "^2.1.1",
+    "pdfjs-dist": "^5.4.296"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

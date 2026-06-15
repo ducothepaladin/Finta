@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react"
 
-import { Document, Page } from "@/lib/pdf"
+import { Document, Page, pdfDocumentOptions } from "@/lib/pdf"
 import { useVirtualPdfPages } from "@/hooks/use-virtual-pdf-pages"
 import {
   applyActiveSearchHighlight,
@@ -67,21 +67,17 @@ export function PdfViewer({
 
   const effectiveStride = stride > 0 ? stride : DEFAULT_PAGE_STRIDE
 
-  const visiblePages = useMemo(() => {
-    const pages = new Set<number>()
+  const renderStart = Math.min(visibleRange.start, pageNumber)
+  const renderEnd = Math.max(visibleRange.end, pageNumber)
 
-    for (
-      let page = visibleRange.start;
-      page <= visibleRange.end;
-      page += 1
-    ) {
-      pages.add(page)
-    }
-
-    pages.add(pageNumber)
-
-    return [...pages].sort((a, b) => a - b)
-  }, [pageNumber, visibleRange.end, visibleRange.start])
+  const pagesToRender = useMemo(
+    () =>
+      Array.from(
+        { length: renderEnd - renderStart + 1 },
+        (_, index) => renderStart + index,
+      ),
+    [renderEnd, renderStart],
+  )
 
   const handleLoadSuccess = useCallback(
     ({ numPages: total }: { numPages: number }) => {
@@ -183,6 +179,7 @@ export function PdfViewer({
     <div className={cn("w-full p-4", className)} onMouseUp={onTextLayerMouseUp}>
       <Document
         file={file}
+        options={pdfDocumentOptions}
         onLoadSuccess={handleLoadSuccess}
         loading={
           <p className="py-12 text-center text-sm text-muted-foreground">
@@ -196,22 +193,22 @@ export function PdfViewer({
         }
       >
         {numPages > 0 && (
-          <div
-            className="relative w-full"
-            style={{ height: numPages * effectiveStride }}
-          >
-            {visiblePages.map((pageNum) => {
+          <div className="relative w-full">
+            {renderStart > 1 && (
+              <div
+                aria-hidden
+                style={{ height: (renderStart - 1) * effectiveStride }}
+              />
+            )}
+            {pagesToRender.map((pageNum) => {
               const isCurrentPage = pageNum === pageNumber
 
               return (
                 <div
-                  key={pageNum}
+                  key={`${pageNum}-${zoom}`}
                   data-page-sentinel={pageNum}
-                  style={{
-                    top: (pageNum - 1) * effectiveStride,
-                    minHeight: effectiveStride,
-                  }}
-                  className="absolute right-0 left-0 flex w-full justify-center pb-4"
+                  style={{ minHeight: effectiveStride }}
+                  className="flex w-full justify-center pb-4"
                 >
                   <Page
                     pageNumber={pageNum}
@@ -219,7 +216,7 @@ export function PdfViewer({
                     width={PDF_BASE_WIDTH}
                     scale={zoom}
                     renderTextLayer
-                    renderAnnotationLayer={true}
+                    renderAnnotationLayer
                     customTextRenderer={
                       isCurrentPage ? customTextRenderer : undefined
                     }
@@ -231,6 +228,12 @@ export function PdfViewer({
                 </div>
               )
             })}
+            {renderEnd < numPages && (
+              <div
+                aria-hidden
+                style={{ height: (numPages - renderEnd) * effectiveStride }}
+              />
+            )}
           </div>
         )}
       </Document>
