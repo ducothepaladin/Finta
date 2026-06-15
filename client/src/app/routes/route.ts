@@ -14,37 +14,34 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "login",
-        element: createElement(
-          ProtectedRoute,
-          { guestOnly: true },
-          createElement(lazyPages.LoginPage),
-        ),
+        element: createElement(ProtectedRoute, {
+          guestOnly: true,
+          children: createElement(lazyPages.LoginPage),
+        }),
       },
       {
         path: "register",
-        element: createElement(
-          ProtectedRoute,
-          { guestOnly: true },
-          createElement(lazyPages.RegisterPage),
-        ),
+        element: createElement(ProtectedRoute, {
+          guestOnly: true,
+          children: createElement(lazyPages.RegisterPage),
+        }),
       },
       {
         path: "verify-otp",
-        element: createElement(
-          ProtectedRoute,
-          { requireAuth: true, requireUnverifiedOtp: true },
-          createElement(lazyPages.VerifyOtpPage),
-        ),
+        element: createElement(ProtectedRoute, {
+          requireAuth: true,
+          requireUnverifiedOtp: true,
+          children: createElement(lazyPages.VerifyOtpPage),
+        }),
       },
     ],
   },
   {
     path: "/",
-    element: createElement(
-      ProtectedRoute,
-      { requireAuth: true },
-      createElement(MainLayout),
-    ),
+    element: createElement(ProtectedRoute, {
+      requireAuth: true,
+      children: createElement(MainLayout),
+    }),
     children: [
       {
         index: true,
@@ -58,11 +55,10 @@ export const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: createElement(
-      ProtectedRoute,
-      { requireAuth: true },
-      createElement(ReadingLayout),
-    ),
+    element: createElement(ProtectedRoute, {
+      requireAuth: true,
+      children: createElement(ReadingLayout),
+    }),
     children: [
       {
         path: "document/:id",
