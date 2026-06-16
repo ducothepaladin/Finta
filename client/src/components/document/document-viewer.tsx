@@ -375,7 +375,13 @@ export function DocumentViewer({ document, className }: DocumentViewerProps) {
                     {fileMedia.progress != null && (
                       <div className="w-full max-w-xs">
                         <DocumentUploadProgressBar
-                          progress={fileMedia.progress}
+                          percent={fileMedia.progress ?? 0}
+                          phase="uploading"
+                          message="Loading PDF..."
+                          loadedBytes={0}
+                          totalBytes={0}
+                          active={fileMedia.status === "loading"}
+                          complete={(fileMedia.progress ?? 0) >= 100}
                         />
                       </div>
                     )}

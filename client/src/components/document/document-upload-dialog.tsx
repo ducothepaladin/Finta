@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { formatFileSize } from "@/lib/format-file-size"
+import type { DocumentUploadProgress } from "@/lib/upload-progress"
 import { cn } from "@/lib/utils"
 import { useUploadDocumentMutation } from "@/queries/document.query"
 
@@ -27,13 +28,25 @@ export function DocumentUploadDialog({
   const uploadMutation = useUploadDocumentMutation()
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [progress, setProgress] = useState(0)
+  const [uploadProgress, setUploadProgress] = useState<DocumentUploadProgress>({
+    percent: 0,
+    loadedBytes: 0,
+    totalBytes: 0,
+    phase: "uploading",
+    message: "Uploading...",
+  })
 
   const isUploading = uploadMutation.isPending
 
   const resetState = useCallback(() => {
     setSelectedFile(null)
-    setProgress(0)
+    setUploadProgress({
+      percent: 0,
+      loadedBytes: 0,
+      totalBytes: 0,
+      phase: "uploading",
+      message: "Uploading...",
+    })
     uploadMutation.reset()
   }, [uploadMutation])
 
@@ -46,7 +59,13 @@ export function DocumentUploadDialog({
   const handleFile = useCallback((file: File | undefined) => {
     if (!file) return
     setSelectedFile(file)
-    setProgress(0)
+    setUploadProgress({
+      percent: 0,
+      loadedBytes: 0,
+      totalBytes: file.size,
+      phase: "uploading",
+      message: "Uploading...",
+    })
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -60,27 +79,52 @@ export function DocumentUploadDialog({
   const handleRemoveFile = () => {
     if (isUploading) return
     setSelectedFile(null)
-    setProgress(0)
+    setUploadProgress({
+      percent: 0,
+      loadedBytes: 0,
+      totalBytes: 0,
+      phase: "uploading",
+      message: "Uploading...",
+    })
   }
 
   const startUpload = () => {
     if (!selectedFile || isUploading) return
 
+    setUploadProgress({
+      percent: 0,
+      loadedBytes: 0,
+      totalBytes: selectedFile.size,
+      phase: "uploading",
+      message: "Uploading...",
+    })
+
     uploadMutation.mutate(
       {
         file: selectedFile,
-        onProgress: setProgress,
+        onProgress: setUploadProgress,
       },
       {
         onSuccess: () => {
-          setProgress(100)
+          setUploadProgress((current) => ({
+            ...current,
+            percent: 100,
+            message: "Upload complete",
+            loadedBytes: current.totalBytes || selectedFile.size,
+          }))
           window.setTimeout(() => {
             handleOpenChange(false)
             resetState()
           }, 400)
         },
         onError: () => {
-          setProgress(0)
+          setUploadProgress({
+            percent: 0,
+            loadedBytes: 0,
+            totalBytes: selectedFile.size,
+            phase: "uploading",
+            message: "Upload failed",
+          })
         },
       },
     )
@@ -149,7 +193,11 @@ export function DocumentUploadDialog({
 
           {isUploading && (
             <div className="mt-3.5 w-full min-w-0">
-              <DocumentUploadProgressBar progress={progress} />
+              <DocumentUploadProgressBar
+                {...uploadProgress}
+                active={isUploading}
+                complete={uploadProgress.percent >= 100}
+              />
             </div>
           )}
         </div>
