@@ -16,6 +16,9 @@ function ensureFileNameHasExtension(
 
   const mime = (mimeType || "").trim().toLowerCase()
   if (mime.includes("pdf")) return `${t}.pdf`
+  if (mime.includes("jpeg") || mime.includes("jpg")) return `${t}.jpg`
+  if (mime.includes("png")) return `${t}.png`
+  if (mime.includes("webp")) return `${t}.webp`
   return `${t}.bin`
 }
 

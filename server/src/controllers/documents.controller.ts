@@ -5,6 +5,7 @@ import { successResponse } from "../lib/api-response.js"
 import { asyncHandler } from "../lib/async-handler.js"
 import { HttpError } from "../lib/http-error.js"
 import * as documentService from "../services/document.service.js"
+import { createUploadSession } from "../services/upload-session.store.js"
 
 class DocumentsController {
   list: RequestHandler = asyncHandler(async (req, res) => {
@@ -50,9 +51,15 @@ class DocumentsController {
       throw new HttpError(400, "file is required")
     }
 
+    const sessionId = String(req.headers["x-upload-session"] ?? "").trim()
+    if (sessionId) {
+      createUploadSession(sessionId, req.user!.id)
+    }
+
     const document = await documentService.uploadDocument(
       req.user!.id,
       req.file,
+      sessionId || undefined,
     )
 
     res.status(201).json(
@@ -61,6 +68,25 @@ class DocumentsController {
         meta: { endpoint: "/api/documents/upload", method: "POST" },
         data: { document },
         message: "Document uploaded successfully",
+      }),
+    )
+  })
+
+  getUploadSession: RequestHandler = asyncHandler(async (req, res) => {
+    const sessionId = String(req.params.sessionId)
+    const session = await documentService.getUploadSession(
+      req.user!.id,
+      sessionId,
+    )
+
+    res.json(
+      successResponse({
+        meta: {
+          endpoint: `/api/documents/upload-sessions/${sessionId}`,
+          method: "GET",
+        },
+        data: { session },
+        message: "Upload session fetched successfully",
       }),
     )
   })

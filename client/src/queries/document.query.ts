@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { documentService } from "@/services/document.service"
+import type { DocumentUploadProgress } from "@/lib/upload-progress"
 import type { DocumentListParams } from "@/types/document"
 
 export const documentQueryKeys = {
@@ -50,7 +51,7 @@ export function useUploadDocumentMutation() {
       onProgress,
     }: {
       file: File
-      onProgress?: (progress: number) => void
+      onProgress?: (progress: DocumentUploadProgress) => void
     }) => documentService.upload(file, onProgress),
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({ queryKey: documentQueryKeys.all })

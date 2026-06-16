@@ -306,3 +306,16 @@
     background-color: rgb(88 127 167 / 0.45);
     outline: 1px solid rgb(88 127 167 / 0.8);
 }
+
+@keyframes upload-progress-shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(200%);
+    }
+}
+
+.upload-progress-shimmer {
+    animation: upload-progress-shimmer 1.8s ease-in-out infinite;
+}

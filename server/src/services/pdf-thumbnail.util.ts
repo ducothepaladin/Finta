@@ -63,11 +63,14 @@ class NodeCanvasPackageFactory {
 
 export async function renderPdfFirstPageThumbnail(
   pdfBuffer: Uint8Array,
+  onProgress?: (percent: number) => void,
 ): Promise<Uint8Array | null> {
   let pdfDocument: Awaited<ReturnType<typeof getDocument>["promise"]> | null =
     null
 
   try {
+    onProgress?.(5)
+
     const loadingTask = getDocument({
       data: pdfBuffer,
       ...pdfDocumentInitOptions,
@@ -75,22 +78,37 @@ export async function renderPdfFirstPageThumbnail(
     })
 
     pdfDocument = await loadingTask.promise
+    onProgress?.(25)
+
     const page = await pdfDocument.getPage(1)
+    onProgress?.(40)
+
     const baseViewport = page.getViewport({ scale: 1 })
     const scale = THUMBNAIL_WIDTH / baseViewport.width
     const viewport = page.getViewport({ scale })
 
     const canvasFactory = new NodeCanvasPackageFactory()
-    const { canvas } = canvasFactory.create(viewport.width, viewport.height)
+    const { canvas, context } = canvasFactory.create(
+      viewport.width,
+      viewport.height,
+    )
+
+    onProgress?.(55)
 
     await page.render({
-      canvas: canvas as never,
+      canvasContext: context as never,
       viewport,
+      canvas: canvas as never,
     }).promise
 
-    return new Uint8Array(
+    onProgress?.(80)
+
+    const jpeg = new Uint8Array(
       (canvas as Canvas).toBuffer("image/jpeg", { quality: 0.85 }),
     )
+
+    onProgress?.(100)
+    return jpeg
   } catch (error) {
     console.error("Failed to render PDF thumbnail:", error)
     return null

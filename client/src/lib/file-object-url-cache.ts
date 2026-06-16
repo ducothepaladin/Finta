@@ -52,6 +52,20 @@ function notify(entry: CacheEntry) {
   }
 }
 
+function guessBlobMimeType(relativePath: string, contentType?: string): string {
+  const header = contentType?.split(";")[0]?.trim().toLowerCase()
+  if (header && header !== "application/octet-stream") {
+    return header
+  }
+
+  const lower = relativePath.toLowerCase()
+  if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg"
+  if (lower.endsWith(".png")) return "image/png"
+  if (lower.endsWith(".webp")) return "image/webp"
+  if (lower.endsWith(".pdf")) return "application/pdf"
+  return "application/octet-stream"
+}
+
 function releaseEntry(key: string, entry: CacheEntry) {
   entry.refCount -= 1
   if (entry.refCount > 0) return
@@ -108,7 +122,12 @@ async function fetchBlobForKey(
     if (!current || current !== entry) return
 
     entry.blobUrl = URL.createObjectURL(
-      new Blob([response.data as Blob], { type: "application/pdf" }),
+      new Blob([response.data as Blob], {
+        type: guessBlobMimeType(
+          relativePath,
+          response.headers["content-type"] as string | undefined,
+        ),
+      }),
     )
     entry.status = "ready"
     entry.progress = 100
