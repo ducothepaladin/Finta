@@ -11,6 +11,27 @@ services:
       retries: 10
       start_period: 10s
 
+  ai:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 8081
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AI_DEFAULT_MODEL: ${AI_DEFAULT_MODEL:-gpt-4o-mini}
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:-}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'wget -qO- http://127.0.0.1:8081/health > /dev/null || exit 1',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
   server:
     build:
       context: ./server
@@ -18,6 +39,8 @@ services:
     restart: unless-stopped
     depends_on:
       mongodb:
+        condition: service_healthy
+      ai:
         condition: service_healthy
     environment:
       NODE_ENV: production
@@ -34,6 +57,9 @@ services:
       BREVO_FROM_NAME: ${BREVO_FROM_NAME:-}
       FILE_SERVICE_URL: ${FILE_SERVICE_URL:-https://pdn-api-files.laconic.co.th/api/file/v1}
       UPLOAD_FILE_PATH: ${UPLOAD_FILE_PATH:-finta/documents}
+      AI_SERVICE_URL: http://ai:8081
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:-}
+      AI_DEFAULT_MODEL: ${AI_DEFAULT_MODEL:-gpt-4o-mini}
     healthcheck:
       test:
         [

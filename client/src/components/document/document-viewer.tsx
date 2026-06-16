@@ -13,11 +13,16 @@ import { Button } from "@/components/ui/button"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useFileObjectUrl } from "@/hooks/use-file-object-url"
 import {
+  mapAiTaskToHistoryItem,
+  useDocumentAiHistoryQuery,
+  useSummarizeDocumentMutation,
+  useTranslateDocumentMutation,
+} from "@/queries/ai.query"
+import {
   createChatMessageId,
   createHistoryId,
-  getMockChatReply,
-  MOCK_HISTORY_ITEMS,
 } from "@/lib/document-ai-mock"
+import { documentAiService } from "@/services/document-ai.service"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import type {
@@ -52,8 +57,7 @@ export function DocumentViewer({ document, className }: DocumentViewerProps) {
   const [numPages, setNumPages] = useState(0)
   const [chatOpen, setChatOpen] = useState(false)
   const [historyTab, setHistoryTab] = useState<DocumentHistoryTab>("all")
-  const [historyItems, setHistoryItems] =
-    useState<DocumentHistoryItem[]>(MOCK_HISTORY_ITEMS)
+  const [historyItems, setHistoryItems] = useState<DocumentHistoryItem[]>([])
   const [chatMessages, setChatMessages] =
     useState<DocumentChatMessage[]>(INITIAL_CHAT_MESSAGES)
   const [showSuggestions, setShowSuggestions] = useState(true)
@@ -72,6 +76,14 @@ export function DocumentViewer({ document, className }: DocumentViewerProps) {
   const [historyOpen, setHistoryOpen] = useState(true)
 
   const fileMedia = useFileObjectUrl(document.fileUrl)
+  const { data: aiHistory = [] } = useDocumentAiHistoryQuery(document.id)
+  const translateMutation = useTranslateDocumentMutation(document.id)
+  const summarizeMutation = useSummarizeDocumentMutation(document.id)
+  const chatAbortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    setHistoryItems(aiHistory.map(mapAiTaskToHistoryItem))
+  }, [aiHistory])
 
   useEffect(() => {
     setActiveMatchIndex(0)
@@ -182,8 +194,54 @@ export function DocumentViewer({ document, className }: DocumentViewerProps) {
     [currentPage],
   )
 
+  const handleTranslateSelection = useCallback(async () => {
+    const selectedText = selectionPopover.text.trim()
+    if (!selectedText) return
+
+    dismissSelectionPopover()
+
+    try {
+      const task = await translateMutation.mutateAsync({
+        selectedText,
+        pageNumber: currentPage,
+      })
+      setHistoryItems((prev) => [mapAiTaskToHistoryItem(task), ...prev])
+      toast.success("Translation completed")
+    } catch {
+      // Error toast handled by mutation.
+    }
+  }, [
+    currentPage,
+    dismissSelectionPopover,
+    selectionPopover.text,
+    translateMutation,
+  ])
+
+  const handleSummarizeSelection = useCallback(async () => {
+    const selectedText = selectionPopover.text.trim()
+    if (!selectedText) return
+
+    dismissSelectionPopover()
+
+    try {
+      const task = await summarizeMutation.mutateAsync({
+        selectedText,
+        pageNumber: currentPage,
+      })
+      setHistoryItems((prev) => [mapAiTaskToHistoryItem(task), ...prev])
+      toast.success("Summary completed")
+    } catch {
+      // Error toast handled by mutation.
+    }
+  }, [
+    currentPage,
+    dismissSelectionPopover,
+    selectionPopover.text,
+    summarizeMutation,
+  ])
+
   const sendChatMessage = useCallback(
-    (text: string) => {
+    async (text: string) => {
       const trimmed = text.trim()
       if (!trimmed || isSending) return
 
@@ -195,34 +253,87 @@ export function DocumentViewer({ document, className }: DocumentViewerProps) {
         role: "user",
         text: trimmed,
       }
-      const typingId = createChatMessageId()
+      const aiMessageId = createChatMessageId()
       const typingMessage: DocumentChatMessage = {
-        id: typingId,
+        id: aiMessageId,
         role: "ai",
-        text: "Thinking…",
+        text: "",
         isTyping: true,
       }
 
       setChatMessages((prev) => [...prev, userMessage, typingMessage])
 
-      const delay = 700 + Math.random() * 600
-      window.setTimeout(() => {
-        setChatMessages((prev) => {
-          const withoutTyping = prev.filter((message) => message.id !== typingId)
-          return [
-            ...withoutTyping,
-            {
-              id: createChatMessageId(),
-              role: "ai",
-              text: getMockChatReply(trimmed),
-            },
-          ]
-        })
+      const history = chatMessages
+        .filter((message) => !message.isTyping && message.id !== "welcome")
+        .map((message) => ({
+          role: message.role === "user" ? ("user" as const) : ("assistant" as const),
+          content: message.text,
+        }))
+
+      chatAbortRef.current?.abort()
+      const controller = new AbortController()
+      chatAbortRef.current = controller
+
+      try {
+        let streamedText = ""
+
+        for await (const chunk of documentAiService.streamChat(
+          {
+            documentId: document.id,
+            message: trimmed,
+            pageNumber: currentPage,
+            history,
+          },
+          controller.signal,
+        )) {
+          if (chunk.error) {
+            throw new Error(chunk.error)
+          }
+
+          if (chunk.delta) {
+            streamedText += chunk.delta
+          }
+
+          setChatMessages((prev) =>
+            prev.map((message) =>
+              message.id === aiMessageId
+                ? {
+                    ...message,
+                    text: streamedText,
+                    isTyping: !chunk.done,
+                  }
+                : message,
+            ),
+          )
+        }
+      } catch (error) {
+        if (controller.signal.aborted) return
+
+        setChatMessages((prev) =>
+          prev.filter((message) => message.id !== aiMessageId),
+        )
+        toast.error(
+          error instanceof Error ? error.message : "Could not send message",
+        )
+      } finally {
+        setChatMessages((prev) =>
+          prev.map((message) =>
+            message.id === aiMessageId
+              ? { ...message, isTyping: false }
+              : message,
+          ),
+        )
         setIsSending(false)
-      }, delay)
+      }
     },
-    [isSending],
+    [chatMessages, currentPage, document.id, isSending],
   )
+
+  useEffect(() => {
+    return () => {
+      chatAbortRef.current?.abort()
+    }
+  }, [])
 
   return (
     <div className={cn("flex h-full bg-background/95 min-h-0 overflow-hidden", className)}>
@@ -319,18 +430,8 @@ export function DocumentViewer({ document, className }: DocumentViewerProps) {
                   selectionPopover.text.slice(0, 120) || "New note",
                 )
               }
-              onTranslate={() =>
-                addHistoryItem(
-                  "translate",
-                  selectionPopover.text.slice(0, 120) || "Translated selection",
-                )
-              }
-              onSummarize={() =>
-                addHistoryItem(
-                  "summary",
-                  selectionPopover.text.slice(0, 120) || "Page summary",
-                )
-              }
+              onTranslate={handleTranslateSelection}
+              onSummarize={handleSummarizeSelection}
             />
           </div>
 

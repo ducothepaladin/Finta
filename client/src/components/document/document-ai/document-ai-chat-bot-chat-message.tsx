@@ -20,7 +20,7 @@ export function DocumentAiChatBotChatMessage({
         message.isTyping && "text-muted-foreground italic",
       )}
     >
-      {message.text}
+      {message.text || (message.isTyping ? "Thinking…" : "")}
     </div>
   )
 }
