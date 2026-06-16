@@ -34,6 +34,24 @@ export type DocumentUploadResponse = {
   document: DocumentDto
 }
 
+export type UploadSessionSnapshot = {
+  sessionId: string
+  status: "active" | "complete" | "failed"
+  stage:
+    | "storing_pdf"
+    | "generating_thumbnail"
+    | "storing_thumbnail"
+    | "saving"
+  percent: number
+  message: string
+  document?: DocumentDto
+  error?: string
+}
+
+export type UploadSessionResponse = {
+  session: UploadSessionSnapshot
+}
+
 export type DocumentDetailResponse = {
   document: DocumentDto
 }
@@ -58,6 +76,7 @@ export type DocumentViewMode = "grid" | "list"
 export type DocumentListApiResponse = ApiEnvelope<DocumentListResponse>
 export type DocumentUploadApiResponse = ApiEnvelope<DocumentUploadResponse>
 export type DocumentDetailApiResponse = ApiEnvelope<DocumentDetailResponse>
+export type UploadSessionApiResponse = ApiEnvelope<UploadSessionResponse>
 
 export type DocumentHistoryTab = "all" | "translate" | "summary"
 

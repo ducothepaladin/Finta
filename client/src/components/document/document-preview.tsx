@@ -1,4 +1,5 @@
 import { BookOpen } from "lucide-react"
+import { useEffect, useState } from "react"
 
 import { Badge } from "@/components/ui/badge"
 import { useFileObjectUrl } from "@/hooks/use-file-object-url"
@@ -34,9 +35,17 @@ export function DocumentPreview({
   compact = false,
 }: DocumentPreviewProps) {
   const thumbnail = useFileObjectUrl(thumbnailUrl)
+  const [imageFailed, setImageFailed] = useState(false)
   const hasThumbnail = Boolean(thumbnailUrl?.trim())
   const showImage =
-    hasThumbnail && thumbnail.status === "ready" && Boolean(thumbnail.src)
+    hasThumbnail &&
+    thumbnail.status === "ready" &&
+    Boolean(thumbnail.src) &&
+    !imageFailed
+
+  useEffect(() => {
+    setImageFailed(false)
+  }, [thumbnailUrl, thumbnail.src])
 
   return (
     <div
@@ -58,6 +67,7 @@ export function DocumentPreview({
           src={thumbnail.src}
           alt=""
           className="absolute inset-0 size-full bg-white object-cover object-top"
+          onError={() => setImageFailed(true)}
         />
       ) : (
         <PreviewSkeleton compact={compact} />
