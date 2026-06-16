@@ -1,6 +1,6 @@
 import { Schema } from "mongoose"
 
-export type AiTaskType = "translate" | "summarize"
+export type AiTaskType = "translate" | "summarize" | "chat"
 
 export type AiTaskStatus = "pending" | "completed" | "failed"
 
@@ -11,7 +11,7 @@ export interface NormalizedRect {
   h: number
 }
 
-export const AI_TASK_TYPES: AiTaskType[] = ["translate", "summarize"]
+export const AI_TASK_TYPES: AiTaskType[] = ["translate", "summarize", "chat"]
 
 export const AI_TASK_STATUSES: AiTaskStatus[] = [
   "pending",

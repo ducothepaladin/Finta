@@ -35,4 +35,8 @@ export const env = {
 
   fileServiceUrl: required("FILE_SERVICE_URL"),
   uploadFilePath: optional("UPLOAD_FILE_PATH", "finta/documents"),
+
+  aiServiceUrl: optional("AI_SERVICE_URL", "http://localhost:8081"),
+  aiInternalToken: process.env.AI_INTERNAL_TOKEN?.trim() ?? "",
+  aiDefaultModel: optional("AI_DEFAULT_MODEL", "gpt-4o-mini"),
 } as const

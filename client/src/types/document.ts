@@ -76,3 +76,22 @@ export type DocumentChatMessage = {
   text: string
   isTyping?: boolean
 }
+
+export type DocumentChatHistoryEntry = {
+  role: "user" | "assistant"
+  content: string
+}
+
+export type DocumentAiTaskType = "translate" | "summarize"
+
+export type DocumentAiTask = {
+  id: string
+  type: DocumentAiTaskType
+  output: string
+  pageNumber: number
+  createdAt: string
+}
+
+export type DocumentAiHistoryResponse = {
+  tasks: DocumentAiTask[]
+}
